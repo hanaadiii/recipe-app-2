@@ -14,8 +14,7 @@ def check_api_key(x_api_key: str):
 
 
 @router.post("/register")
-def register_user(user: UserCreate, x_api_key: str = Header(None)):
-    check_api_key(x_api_key)
+def register_user(user: UserCreate):
 
     conn = get_db()
     cur = conn.cursor()
@@ -40,5 +39,16 @@ def get_users(x_api_key: str = Header(None)):
     rows = cur.execute("SELECT id, username FROM users").fetchall()
 
     return [UserOut(id=r["id"], username=r["username"]) for r in rows]
+
+@router.post("/login")
+def login(user: UserCreate):
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    rows = cur.execute("SELECT id, username, password FROM users where username=? and password=?",(user.username, user.password)).fetchall()
+    row = rows[0]
+    return UserOut(id=row["id"], username=row["username"])
+
 
 
