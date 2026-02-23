@@ -8,14 +8,14 @@ router = APIRouter(prefix="/recipes", tags=["Recipes"])
 
 
 @router.post("/", response_model=RecipeOut, dependencies=[Depends(require_api_key)])
-def create_recipe(recipe: RecipeCreate, user=Depends(require_api_key)):
+def create_recipe(recipe: RecipeCreate, _:str=Depends(require_api_key)):
     conn = get_connection()
     cur = conn.cursor()
 
     cur.execute("""
         INSERT INTO recipes (owner_id, title, description)
         VALUES (?, ?, ?)
-    """, (user["id"], recipe.title, recipe.description))
+    """, (1, recipe.title, recipe.description))
 
     recipe_id = cur.lastrowid
 
@@ -33,9 +33,8 @@ def create_recipe(recipe: RecipeCreate, user=Depends(require_api_key)):
                 amount=ing.amount,
                 unit=ing.unit,
                 calories=0,
-                proteins=0,
-                fats=0,
-                carbs=0
+                recipe_id=recipe_id,
+                id=2,
             )
         )
 
@@ -46,6 +45,7 @@ def create_recipe(recipe: RecipeCreate, user=Depends(require_api_key)):
         id=recipe_id,
         title=recipe.title,
         description=recipe.description,
-        ingredients=ingredients_out
+        ingredients=ingredients_out,
+        owner_id=1
     )
 

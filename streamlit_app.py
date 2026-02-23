@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-API_URL = "http://127.0.0.1:8001"
+API_URL = "http://127.0.0.1:8000"
 
 st.set_page_config(page_title="Recipe App", layout="wide")
 
@@ -90,6 +90,7 @@ def main_page():
                     })
                 except:
                     st.warning(f"Neispravan format: {line}")
+            print(ingredients_list)
 
             payload = {
                 "title": recipe_title,
@@ -99,7 +100,7 @@ def main_page():
 
             r = requests.post(f"{API_URL}/recipes/",
                               json=payload,
-                              headers={"API_KEY": "1234"})
+                              headers={"api-key": "1234"})
 
             if r.status_code == 200:
                 st.success("Recipe saved!")
